@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>오늘의 메시지</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 80px;
+      background: #f9f9f9;
+    }
+    #phrase {
+      font-size: 28px;
+      font-weight: bold;
+      color: #333;
+      padding: 20px;
+      border-radius: 12px;
+      display: inline-block;
+      background: white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <div id="phrase">메시지를 불러오는 중...</div>
+
+  <script>
+    const phraseEl = document.getElementById('phrase');
+
+    function parseMessagesFromURL() {
+      const usp = new URLSearchParams(location.search);
+      const raw = usp.get('m');
+      if (!raw) return null;
+      return decodeURIComponent(raw).split('|').map(s => s.trim()).filter(Boolean);
+    }
+
+    let messages = parseMessagesFromURL() || [
+      '행복은 내 안에 있고 희망은 행복 안에 있다.',
+      '나 수고했다 오늘도',
+      '괜찮아도 괜찮아 - 도경수',
+      '나를 가장 잘 아는 건 나니까, 나는 오늘도 열심히 보냈다.',
+      '괜찮아, 조금씩 나아질 거야',
+      '안 생길 것 같죠? 생겨요, 좋은 일',
+      '매일 그대라서 행복하다 - 세븐틴',
+      '그럴 수도 있지',
+      '사람은 스스로 믿는 대로 된다.',
+      'pick up the phone - Henry Moodie',
+      'Left Right Left - Charlie Puth',
+      'Billimillion - 유우리',
+      '내일은 더 강해지기를',
+      '나 답게 살면 된다.',
+      '시도하라, 한 번도 실패하지 않은 것 처럼',
+      '문득 포기하고 싶어질때는 왜 시작했는지를 기억하자',
+      '언제든지 스마일 :)',
+      '힘을 내!',
+      '그 끝에 나는 웃고 있을 거야',
+      'A-O-K - Tai Verdes',
+      'Bummerland - AJR'
+    ];
+
+    function getUserID() {
+      let id = localStorage.getItem('user_id');
+      if (!id) {
+        id = Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('user_id', id);
+      }
+      return id;
+    }
+
+    function showDailyRandomMessage() {
+      if (!messages.length) return;
+      const today = new Date();
+      const dayKey = today.getFullYear() + '-' + (today.getMonth()+1) + '-' + today.getDate();
+      const userID = getUserID();
+      const hashStr = dayKey + '-' + userID;
+      let hash = 0;
+      for (let i = 0; i < hashStr.length; i++) {
+        hash = (hash << 5) - hash + hashStr.charCodeAt(i);
+        hash |= 0; // 32bit 정수
+      }
+      const idx = Math.abs(hash) % messages.length;
+      phraseEl.textContent = messages[idx];
+    }
+
+    showDailyRandomMessage();
+  </script>
+</body>
+</html>
